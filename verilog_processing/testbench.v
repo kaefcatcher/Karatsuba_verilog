@@ -1,13 +1,12 @@
-// testbench.v
 module testbench;
-  reg [7:0] A, B;
-  wire [15:0] result;
+  reg [3:0] A, B;
+  wire [7:0] result;
 
   // Подключите ваш модуль multiply здесь
-  multiply #(8) uut (
-    .A(A),
-    .B(B),
-    .result(result)
+  multiply #(4) uut (
+    .iX(A),
+    .iY(B),
+    .oO(result)
   );
 
   initial begin
@@ -15,8 +14,8 @@ module testbench;
     #10;
 
     // Инициализируйте входы A и B здесь
-    A = 8'b01010101;
-    B = 8'b11001100;
+    A = 4'b0101;
+    B = 4'b1100;
 
     // Задержка времени для выполнения умножения
     #1000; // Увеличьте задержку
