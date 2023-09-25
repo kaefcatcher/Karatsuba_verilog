@@ -81,14 +81,16 @@ int main() {
   cin >> a;
   cout << "Введите второе число (в формате двоичного числа): ";
   cin >> b;
+  string fn = to_string(a);
+  string sn = to_string(b);
+  if (n % 2 == 1) {
+    fn.insert(0, 1, '0');
+    sn.insert(0, 1, '0');
+  }
+  n++;
 
-  // string binary_a = bitset<32>(a).to_string().substr(32 - n, n);
-  // string binary_b = bitset<32>(b).to_string().substr(32 - n, n);
-
-  // Создаем и открываем файл solution.v для записи
   ofstream verilogFile("solution.v");
 
-  // Пишем Verilog код в файл
   verilogFile << "module solution(" << endl;
   verilogFile << "input  wire [" << n - 1 << ":0] iX," << endl;
   verilogFile << "input  wire [" << n - 1 << ":0] iY," << endl;
@@ -114,7 +116,7 @@ int main() {
               << ") + t_s;\nassign oO = (p << " << n << ") + ((t - u) << "
               << n / 2 << ") + q;" << endl;
   verilogFile << "endmodule" << endl;
-  // Закрываем файл
+
   verilogFile.close();
   ofstream verilogTestFile("testSolution.v");
   verilogTestFile << "module testSolution;\nreg [" << n - 1
@@ -122,8 +124,8 @@ int main() {
   verilogTestFile << "  solution #(" << n
                   << ") uut (\n.iX(A),\n.iY(B),\n.oO(result)\n);" << endl;
   verilogTestFile
-      << "  initial begin\n    #10;\n    A = " << n << "'b" << a
-      << ";\n    B = " << n << "'b" << b
+      << "  initial begin\n    #10;\n    A = " << n << "'b" << fn
+      << ";\n    B = " << n << "'b" << sn
       << ";\n    #1000;\n    wait(result !== 'bx);\n    $display(\"A = %b, B = "
          "%b, result = %b\", A, B, result);\n    $finish;\n  end\nendmodule"
       << endl;
