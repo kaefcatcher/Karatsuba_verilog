@@ -107,31 +107,38 @@ void testFile(int n, string fn, string sn) {
   verilogTestFile << "    $finish;\n  end\nendmodule" << endl;
   verilogTestFile.close();
 }
-void generateautotests(int n, int numberOfTests){
-    ofstream verilogTestFile("testSolution.v");
-    verilogTestFile << "module testSolution;\nreg [" << n - 1 << ":0] A, B;\nwire [" << 2 * n - 1 << ":0] result;" << endl;
-    verilogTestFile << "  solution #(" << n << ") uut (\n.iX(A),\n.iY(B),\n.oO(result)\n);" << endl;
-    verilogTestFile << "  initial begin\n" << endl;
+void generateautotests(int n, int numberOfTests) {
+  ofstream verilogTestFile("testSolution.v");
+  verilogTestFile << "module testSolution;\nreg [" << n - 1
+                  << ":0] A, B;\nwire [" << 2 * n - 1 << ":0] result;" << endl;
+  verilogTestFile << "  solution #(" << n
+                  << ") uut (\n.iX(A),\n.iY(B),\n.oO(result)\n);" << endl;
+  verilogTestFile << "  initial begin\n" << endl;
 
-    for (int i = 0; i < numberOfTests; i++) { 
-        string current_fn = generateRandomBinary(n);
-        string current_sn = generateRandomBinary(n);
-        
-        verilogTestFile << "    // Test Case " << i+1 << endl;
-        verilogTestFile << "    #10;\n    A = " << n << "'b" << current_fn << ";\n    B = " << n << "'b" << current_sn << ";" << endl;
-        verilogTestFile << "    #1000;\n    wait(result !== 'bx);\n";
-        
+  for (int i = 0; i < numberOfTests; i++) {
+    string current_fn = generateRandomBinary(n);
+    string current_sn = generateRandomBinary(n);
 
-        int expected_result = stoi(current_fn, nullptr, 2) * stoi(current_sn, nullptr, 2);
-        verilogTestFile << "    if (result === " << n*2 << "'b" << bitset<16>(expected_result) << ") begin" << endl;
-        verilogTestFile << "        $display(\"Test Case " << i+1 << " PASSED\");" << endl;
-        verilogTestFile << "    end else begin" << endl;
-        verilogTestFile << "        $display(\"Test Case " << i+1 << " FAILED. Expected: %b, Got: %b\", " << n*2 << "'b" << bitset<16>(expected_result) << ", result);" << endl;
-        verilogTestFile << "    end" << endl;
-    }
-    
-    verilogTestFile << "    $finish;\n  end\nendmodule" << endl;
-    verilogTestFile.close();
+    verilogTestFile << "    // Test Case " << i + 1 << endl;
+    verilogTestFile << "    #10;\n    A = " << n << "'b" << current_fn
+                    << ";\n    B = " << n << "'b" << current_sn << ";" << endl;
+    verilogTestFile << "    #1000;\n    wait(result !== 'bx);\n";
+
+    int expected_result =
+        stoi(current_fn, nullptr, 2) * stoi(current_sn, nullptr, 2);
+    verilogTestFile << "    if (result === " << n * 2 << "'b"
+                    << bitset<16>(expected_result) << ") begin" << endl;
+    verilogTestFile << "        $display(\"Test Case " << i + 1 << " PASSED\");"
+                    << endl;
+    verilogTestFile << "    end else begin" << endl;
+    verilogTestFile << "        $display(\"Test Case " << i + 1
+                    << " FAILED. Expected: %b, Got: %b\", " << n * 2 << "'b"
+                    << bitset<16>(expected_result) << ", result);" << endl;
+    verilogTestFile << "    end" << endl;
+  }
+
+  verilogTestFile << "    $finish;\n  end\nendmodule" << endl;
+  verilogTestFile.close();
 }
 
 void testing() {
@@ -140,7 +147,7 @@ void testing() {
   string fn = generateRandomBinary(n);
   string sn = generateRandomBinary(n);
   verilog_processing(n);
-  generateautotests(n,n);
+  generateautotests(n, n);
 }
 int main() {
 #ifdef isinput
