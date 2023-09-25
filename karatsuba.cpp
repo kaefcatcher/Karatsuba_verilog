@@ -12,7 +12,7 @@ void input();
 void verilog_processing(int n);
 void testFile(int n, string fn, string sn);
 void testing();
-
+void generateautotests(int n, int numberOfTests);
 bool isBinaryString(const string &str) {
   for (char c : str) {
     if (c != '0' && c != '1') {
