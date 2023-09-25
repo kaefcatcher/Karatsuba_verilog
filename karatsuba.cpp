@@ -1,31 +1,67 @@
 #include <bitset>
+#include <cstdlib>
+#include <ctime>
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
 
 using namespace std;
 
+void testing();
+void input();
+void verilog_processing(int n);
+void testFile(int n, string fn, string sn);
+void testing();
 
-int main() {
+bool isBinaryString(const string &str) {
+  for (char c : str) {
+    if (c != '0' && c != '1') {
+      return false;
+    }
+  }
+  return true;
+}
+string generateRandomBinary(int length) {
+  std::string binaryNumber;
+  for (int i = 0; i < length; i++) {
+    int bit = rand() % 2;
+    binaryNumber += std::to_string(bit);
+  }
+  return binaryNumber;
+}
+void input() {
   int n;
   cout << "Введите количество разрядов n: ";
-  cin >> n;
-
-  int a, b;
+  if (!(cin >> n) || n <= 0) {
+    cout << "Введена неверная разрядность\n";
+    exit(-1);
+  }
+  string a, b;
   cout << "Введите первое число (в формате двоичного числа): ";
-  cin >> a;
+  if (!(cin >> a) || a.length() != n || !isBinaryString((a))) {
+    cout << "Первое число введено неверно\n";
+    exit(-1);
+  }
   cout << "Введите второе число (в формате двоичного числа): ";
-  cin >> b;
-  string fn = to_string(a);
-  string sn = to_string(b);
+  if (!(cin >> b) || b.length() != n || !isBinaryString(a)) {
+    cout << "Второе число введено неверно\n";
+    exit(-1);
+  }
+  string fn = a;
+  string sn = b;
+  if (!isBinaryString(fn) || !isBinaryString(sn)) {
+    cout << "Введенные числа не являются двоичными\n";
+  }
   if (n % 2 == 1) {
-	cout<<n%2;
+    cout << n % 2;
     fn.insert(0, 1, '0');
     sn.insert(0, 1, '0');
-	n++;
+    n++;
   }
-  
-
+  verilog_processing(n);
+  testFile(n, fn, sn);
+}
+void verilog_processing(int n) {
   ofstream verilogFile("solution.v");
 
   verilogFile << "module solution(" << endl;
@@ -55,17 +91,37 @@ int main() {
   verilogFile << "endmodule" << endl;
 
   verilogFile.close();
+}
+void testFile(int n, string fn, string sn) {
   ofstream verilogTestFile("testSolution.v");
   verilogTestFile << "module testSolution;\nreg [" << n - 1
                   << ":0] A, B;\nwire [" << 2 * n - 1 << ":0] result;" << endl;
   verilogTestFile << "  solution #(" << n
                   << ") uut (\n.iX(A),\n.iY(B),\n.oO(result)\n);" << endl;
-  verilogTestFile
-      << "  initial begin\n    #10;\n    A = " << n << "'b" << fn
-      << ";\n    B = " << n << "'b" << sn
-      << ";\n    #1000;\n    wait(result !== 'bx);\n    $display(\"A = %b, B = "
-         "%b, result = %b\", A, B, result);\n    $finish;\n  end\nendmodule"
-      << endl;
+  verilogTestFile << "  initial begin\n    #10;\n    A = " << n << "'b" << fn
+                  << ";\n    B = " << n << "'b" << sn
+                  << ";\n    #1000;\n    wait(result !== 'bx);\n    "
+                     "$display(\"A = %b, B = "
+                     "%b, result = %b\", A, B, result);"
+                  << endl;
+  verilogTestFile << "    $finish;\n  end\nendmodule" << endl;
   verilogTestFile.close();
+}
+void testing() {
+  srand(time(0));
+  int n = 8;
+  string fn = generateRandomBinary(n);
+  string sn = generateRandomBinary(n);
+  verilog_processing(n);
+  testFile(n, fn, sn);
+}
+int main() {
+#ifdef isinput
+  input();
+#endif
+#ifdef autotest
+  testing();
+#endif
+
   return 0;
 }
